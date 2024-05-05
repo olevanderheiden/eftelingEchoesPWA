@@ -32,11 +32,21 @@ async function fetchRideList() {
     rides.forEach((ride) => {
       console.log("Ride data:", ride);
       const div = document.createElement("div");
+
+      // Determine languege spe
+      let rideName =
+        ride[`name${capitalizeFirstLetter(language)}`] || ride.name;
+      let rideDescription =
+        ride[`description${capitalizeFirstLetter(language)}`] ||
+        ride.description;
+      let rideType =
+        ride[`rideType${capitalizeFirstLetter(language)}`] || ride.rideType;
+
       div.innerHTML = `
           <div>ID: ${ride.id}</div>
-          <div>Name: ${ride.name}</div>
-          <div>Ride Type: ${ride.rideType}</div>
-          <div>Description: ${ride.description}</div>
+          <div>Name: ${rideName}</div>
+          <div>Ride Type: ${rideType}</div>
+          <div>Description: ${rideDescription}</div>
           <div>Dub Type: ${
             ride.dubType === 0 ? "preshow only" : "Complete experience"
           }</div>`;
@@ -72,6 +82,69 @@ async function fetchRideList() {
     console.log("Error fetching ride data:", error);
   }
 }
+
+// Function to calculate distance between two coordinates
+function calculateDistance(userCoords, rideCoords) {
+  const R = 6371e3; // metres
+  const userLatRadians = (userCoords[0] * Math.PI) / 180; // φ, λ in radians
+  const rideLatRadians = (rideCoords[0] * Math.PI) / 180;
+  const userLongRadians = (userCoords[1] * Math.PI) / 180;
+  const rideLongRadians = (rideCoords[1] * Math.PI) / 180;
+  const deltaLatitude = rideLatRadians - userLatRadians;
+  const deltaLongitude = rideLongRadians - userLongRadians;
+
+  const a =
+    Math.sin(deltaLatitude / 2) * Math.sin(deltaLatitude / 2) +
+    Math.cos(userLatRadians) *
+      Math.cos(rideLatRadians) *
+      Math.sin(deltaLongitude / 2) *
+      Math.sin(deltaLongitude / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distance = R * c; // in metres
+  return distance;
+  console.log("Distance in meters:", distance);
+}
+
+// Function to check if user is within 10 meters of any ride
+function isNearAnyRide(userCoords) {
+  for (let ride of rides) {
+    const rideCoords = ride.coordinates.split(", ").map(Number);
+    if (calculateDistance(userCoords, rideCoords) <= 10) {
+      playAudio(ride.fileName);
+      console.log(`You are near ${ride.name}!`);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Placeholder for user's last known coordinates
+let lastKnownCoords = null;
+
+// Watcher for user's geolocation
+navigator.geolocation.watchPosition(
+  (position) => {
+    const newCoords = [position.coords.latitude, position.coords.longitude];
+    if (
+      lastKnownCoords === null ||
+      calculateDistance(lastKnownCoords, newCoords) >= 10
+    ) {
+      lastKnownCoords = newCoords;
+      if (isNearAnyRide(newCoords)) {
+        console.log("You are near a ride!");
+      }
+    }
+  },
+  (error) => {
+    console.error(error);
+  },
+  {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    distanceFilter: 10,
+  }
+);
 
 // Play the audio file
 function playAudio(fileName) {

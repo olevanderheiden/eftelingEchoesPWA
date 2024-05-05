@@ -1,0 +1,27 @@
+/* Styling for the class "ride" */
+.ride {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #000;
+}
+
+/* Styling for the ID "rides" */
+#rides {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+/* Styling for the header ID "titleCard" */
+#titleCard {
+  background-color: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Styling for the footer */
+footer {
+  background-color: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+}

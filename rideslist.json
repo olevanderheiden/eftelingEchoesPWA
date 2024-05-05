@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Baron 1898",
+    "fileName": "baron1898",
+    "description": "Experience a thrilling dive coaster through a haunted mine shaft.",
+    "rideType": "Coaster",
+    "dubType": 0
+  },
+  {
+    "id": 2,
+    "name": "Flying Dutchman",
+    "fileName": "flyingDutchman",
+    "description": "Embark on a mysterious journey in persout of the legendary ghost ship.",
+    "rideType": "Dark Ride",
+    "dubType": 1
+  },
+  {
+    "id": 3,
+    "name": "Symbolica",
+    "fileName": "symbolica",
+    "description": "Explore the enchanting palace of fantasy and magic.",
+    "rideType": "Trackless Dark Ride",
+    "dubType": 1
+  },
+  {
+    "id": 4,
+    "name": "Joris and the Dragon",
+    "fileName": "jorisAndTheDragon",
+    "description": "Ride a dual-tracked wooden roller coaster and choose your side: fire or water. Who will defeat the dragon?",
+    "rideType": "Coaster",
+    "dubType": 0
+  },
+  {
+    "id": 5,
+    "name": "Vila Volta",
+    "fileName": "vilaVolta",
+    "description": "Experience the terifying curse of Hugo van den Loonsche Duynen. And let your head spin.",
+    "rideType": "Madhouse",
+    "dubType": 1
+  },
+  {
+    "id": 6,
+    "name": "Raveleijn",
+    "fileName": "raveleijn",
+    "description": "Join the five heroes of Raveleijn in their battle against the evil count Olaf Grafhart.",
+    "rideType": "Stunt Show",
+    "dubType": 1
+  }
+]

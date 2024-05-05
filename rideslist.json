@@ -5,7 +5,8 @@
     "fileName": "baron1898",
     "description": "Experience a thrilling dive coaster through a haunted mine shaft.",
     "rideType": "Coaster",
-    "dubType": 0
+    "dubType": 0,
+    "coordinates": "51.64833741709762, 5.050562338831509"
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "fileName": "flyingDutchman",
     "description": "Embark on a mysterious journey in persout of the legendary ghost ship.",
     "rideType": "Dark Ride",
-    "dubType": 1
+    "dubType": 1,
+    "coordinates": "51.647607593626816, 5.051993663855026"
   },
   {
     "id": 3,
@@ -21,7 +23,8 @@
     "fileName": "symbolica",
     "description": "Explore the enchanting palace of fantasy and magic.",
     "rideType": "Trackless Dark Ride",
-    "dubType": 1
+    "dubType": 1,
+    "coordinates": "51.65015790851186, 5.049691997949101"
   },
   {
     "id": 4,
@@ -29,7 +32,8 @@
     "fileName": "jorisAndTheDragon",
     "description": "Ride a dual-tracked wooden roller coaster and choose your side: fire or water. Who will defeat the dragon?",
     "rideType": "Coaster",
-    "dubType": 0
+    "dubType": 0,
+    "coordinates": "51.646739417118376, 5.05174537705254"
   },
   {
     "id": 5,
@@ -37,7 +41,8 @@
     "fileName": "vilaVolta",
     "description": "Experience the terifying curse of Hugo van den Loonsche Duynen. And let your head spin.",
     "rideType": "Madhouse",
-    "dubType": 1
+    "dubType": 1,
+    "coordinates": "51.653424690433326, 5.047397699800237"
   },
   {
     "id": 6,
@@ -45,6 +50,7 @@
     "fileName": "raveleijn",
     "description": "Join the five heroes of Raveleijn in their battle against the evil count Olaf Grafhart.",
     "rideType": "Stunt Show",
-    "dubType": 1
+    "dubType": 1,
+    "coordinates": "51.653195438025826, 5.045918769113386"
   }
 ]

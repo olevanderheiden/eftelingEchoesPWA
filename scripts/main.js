@@ -1,8 +1,12 @@
 let audio;
+let rides = [];
 let errorAudio = new Audio("./audio/sounds/error.wav");
-let successAudio = new Audio("./audio/sounds/success.wav");
+let successAudio = new Audio("./audio/sounds/succes.wav");
 let audioPlaying = false;
-let language = "english";
+let deviceLanguage = navigator.language.split("-")[0].toLowerCase();
+let language = ["english", "french", "german"].includes(deviceLanguage)
+  ? deviceLanguage
+  : "english";
 
 // Register the serviceWorker.js
 if ("serviceWorker" in navigator) {
@@ -25,7 +29,7 @@ if ("serviceWorker" in navigator) {
 async function fetchRideList() {
   try {
     const response = await fetch("rideslist.json");
-    const rides = await response.json();
+    rides = await response.json();
 
     const container = document.getElementById("rides-container");
 
@@ -33,14 +37,18 @@ async function fetchRideList() {
       console.log("Ride data:", ride);
       const div = document.createElement("div");
 
-      // Determine languege spe
       let rideName =
-        ride[`name${capitalizeFirstLetter(language)}`] || ride.name;
+        ride[`name${language.charAt(0).toUpperCase() + language.slice(1)}`] ||
+        ride.name;
+
       let rideDescription =
-        ride[`description${capitalizeFirstLetter(language)}`] ||
-        ride.description;
+        ride[
+          `description${language.charAt(0).toUpperCase() + language.slice(1)}`
+        ] || ride.description;
       let rideType =
-        ride[`rideType${capitalizeFirstLetter(language)}`] || ride.rideType;
+        ride[
+          `rideType${language.charAt(0).toUpperCase() + language.slice(1)}`
+        ] || ride.rideType;
 
       div.innerHTML = `
           <div>ID: ${ride.id}</div>
@@ -153,13 +161,30 @@ function playAudio(fileName) {
     audio.pause();
     audioPlaying = false;
   }
-  audio = new Audio(`./audio/${language}/${fileName}.wav`);
+  let filePath = `./audio/${language}/${fileName}.wav`;
+  let response = fetch(filePath);
+  if (response.status === 404) {
+    filePath = `./audio/dutch/${fileName}.wav`; // switch to Dutch version
+    response = fetch(filePath);
+  }
+  if (response.status === 404 && "dutch" in filePath) {
+    console.error("Audio file not found:", fileName);
+    errorAudio.play();
+    return;
+  }
+  audio = new Audio(filePath);
   audio.play();
   audioPlaying = true;
 }
 // Download the audio file
 function downloadAudio(fileName) {
   console.log("Downloading audio file:", fileName);
-  const tempAudio = new Audio(`./audio/${language}/${fileName}.wav`);
+
+  let filePath = `./audio/${language}/${fileName}.wav`;
+  let response = fetch(filePath);
+  if (response.status !== 200) {
+    filePath = `./audio/dutch/${fileName}.wav`; // switch to Dutch version
+  }
+  const tempAudio = new Audio(filePath);
   successAudio.play();
 }

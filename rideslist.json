@@ -12,7 +12,16 @@
     "rideTypeGerman": "Achterbahn",
     "rideTypeFrench": "Montagnes Russes",
     "dubType": 0,
-    "coordinates": "51.64833741709762, 5.050562338831509"
+    "coordinates": [
+      {
+        "name": "preShow1",
+        "coordinates": "51.64833741709762, 5.050562338831509"
+      },
+      {
+        "name": "preShow2",
+        "coordinates": "51.64833741709762, 5.050562338831509"
+      }
+    ]
   },
   {
     "id": 2,
@@ -28,7 +37,12 @@
     "rideType": "Dark Ride",
     "rideTypeGerman": "Dunkle Fahrt",
     "dubType": 1,
-    "coordinates": "51.647607593626816, 5.051993663855026"
+    "coordinates": [
+      {
+        "name": "main",
+        "coordinates": "51.64769444444444, 5.052"
+      }
+    ]
   },
   {
     "id": 3,
@@ -43,7 +57,12 @@
     "rideTypeGerman": "Dunkle Fahrt ohne Schienen",
     "rideTypeFrench": "Darkride sans rails",
     "dubType": 1,
-    "coordinates": "51.65015790851186, 5.049691997949101"
+    "coordinates": [
+      {
+        "name": "main",
+        "coordinates": "51.64997222222222, 5.04975"
+      }
+    ]
   },
   {
     "id": 4,
@@ -58,7 +77,12 @@
     "rideTypeGerman": "Achterbahn",
     "rideTypeFrench": "Montagnes Russes",
     "dubType": 0,
-    "coordinates": "51.646739417118376, 5.05174537705254"
+    "coordinates": [
+      {
+        "name": "main",
+        "coordinates": "51.646739417118376, 5.05174537705254"
+      }
+    ]
   },
   {
     "id": 5,
@@ -71,7 +95,16 @@
     "rideType": "Madhouse",
     "rideTypeFrench": "Maison Hantée",
     "dubType": 1,
-    "coordinates": "51.653424690433326, 5.047397699800237"
+    "coordinates": [
+      {
+        "name": "preShow1",
+        "coordinates": "51.65327777777778, 5.047527777777778"
+      },
+      {
+        "name": "preShow2",
+        "coordinates": "51.65325, 5.047472222222222"
+      }
+    ]
   },
   {
     "id": 6,
@@ -84,6 +117,11 @@
     "rideType": "Stunt Show",
     "rideTypeFrench": "Spectacle de Cascade",
     "dubType": 1,
-    "coordinates": "51.653195438025826, 5.045918769113386"
+    "coordinates": [
+      {
+        "name": "main",
+        "coordinates": "51.653195438025826, 5.045918769113386"
+      }
+    ]
   }
 ]

@@ -1,10 +1,14 @@
-let audio;
+import { downloadAudio, playAudio, errorAudio } from "./audioManagement.js";
+import {
+  calculateDistance,
+  isNearAnyRide,
+  lastKnownCoords,
+  setLastKnownCoords,
+} from "./locationManagement.js";
+
 let rides = [];
-let errorAudio = new Audio("./audio/sounds/error.wav");
-let successAudio = new Audio("./audio/sounds/succes.wav");
-let audioPlaying = false;
 let deviceLanguage = navigator.language.split("-")[0].toLowerCase();
-let language = ["english", "french", "german"].includes(deviceLanguage)
+export let language = ["english", "french", "german"].includes(deviceLanguage)
   ? deviceLanguage
   : "english";
 
@@ -50,28 +54,6 @@ async function fetchRideList() {
           `rideType${language.charAt(0).toUpperCase() + language.slice(1)}`
         ] || ride.rideType;
 
-      div.innerHTML = `
-          <div>ID: ${ride.id}</div>
-          <div>Name: ${rideName}</div>
-          <div>Ride Type: ${rideType}</div>
-          <div>Description: ${rideDescription}</div>
-          <div>Dub Type: ${
-            ride.dubType === 0 ? "preshow only" : "Complete experience"
-          }</div>`;
-      if (navigator.onLine) {
-        const downloadButton = document.createElement("button");
-        downloadButton.innerHTML = "Download";
-        downloadButton.onclick = () => {
-          downloadAudio(ride.fileName);
-        };
-        div.appendChild(downloadButton);
-      }
-      const playButton = document.createElement("button");
-      playButton.innerHTML = "Play";
-      playButton.onclick = () => {
-        playAudio(ride.fileName);
-      };
-      div.appendChild(playButton);
       const img = new Image();
       img.src = `./images/icons/${ride.fileName}.png`;
       img.alt = `${ride.name} Image`;
@@ -82,8 +64,32 @@ async function fetchRideList() {
       img.onerror = () => {
         img.src = "./images/icons/undefined.png";
       };
-      container.appendChild(div);
       div.appendChild(img);
+
+      div.innerHTML = `
+          <div>Name: ${rideName}</div>
+          <div>Ride Type: ${rideType}</div>
+          <div>Description: ${rideDescription}</div>
+          <div>Dub Type: ${
+            ride.dubType === 0 ? "preshow only" : "Complete experience"
+          }</div>`;
+      if (navigator.onLine) {
+        const downloadButton = document.createElement("button");
+        downloadButton.innerHTML = "Download";
+        downloadButton.onclick = () => {
+          downloadAudio(ride);
+        };
+        div.appendChild(downloadButton);
+      }
+      for (let coordinate of ride.coordinates) {
+        const playButton = document.createElement("button");
+        playButton.innerHTML = `Play ${coordinate.name}`;
+        playButton.onclick = () => {
+          playAudio(ride.fileName, coordinate.name);
+        };
+        div.appendChild(playButton);
+      }
+      container.appendChild(div);
     });
     return container;
   } catch (error) {
@@ -91,54 +97,15 @@ async function fetchRideList() {
   }
 }
 
-// Function to calculate distance between two coordinates
-function calculateDistance(userCoords, rideCoords) {
-  const R = 6371e3; // metres
-  const userLatRadians = (userCoords[0] * Math.PI) / 180; // φ, λ in radians
-  const rideLatRadians = (rideCoords[0] * Math.PI) / 180;
-  const userLongRadians = (userCoords[1] * Math.PI) / 180;
-  const rideLongRadians = (rideCoords[1] * Math.PI) / 180;
-  const deltaLatitude = rideLatRadians - userLatRadians;
-  const deltaLongitude = rideLongRadians - userLongRadians;
-
-  const a =
-    Math.sin(deltaLatitude / 2) * Math.sin(deltaLatitude / 2) +
-    Math.cos(userLatRadians) *
-      Math.cos(rideLatRadians) *
-      Math.sin(deltaLongitude / 2) *
-      Math.sin(deltaLongitude / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  const distance = R * c; // in metres
-  return distance;
-  console.log("Distance in meters:", distance);
-}
-
-// Function to check if user is within 10 meters of any ride
-function isNearAnyRide(userCoords) {
-  for (let ride of rides) {
-    const rideCoords = ride.coordinates.split(", ").map(Number);
-    if (calculateDistance(userCoords, rideCoords) <= 10) {
-      playAudio(ride.fileName);
-      console.log(`You are near ${ride.name}!`);
-      return true;
-    }
-  }
-  return false;
-}
-
-// Placeholder for user's last known coordinates
-let lastKnownCoords = null;
-
 // Watcher for user's geolocation
 navigator.geolocation.watchPosition(
   (position) => {
-    const newCoords = [position.coords.latitude, position.coords.longitude];
+    let newCoords = [position.coords.latitude, position.coords.longitude];
     if (
       lastKnownCoords === null ||
       calculateDistance(lastKnownCoords, newCoords) >= 10
     ) {
-      lastKnownCoords = newCoords;
+      setLastKnownCoords(newCoords);
       if (isNearAnyRide(newCoords)) {
         console.log("You are near a ride!");
       }
@@ -153,38 +120,3 @@ navigator.geolocation.watchPosition(
     distanceFilter: 10,
   }
 );
-
-// Play the audio file
-function playAudio(fileName) {
-  console.log("Playing audio file:", fileName);
-  if (audioPlaying) {
-    audio.pause();
-    audioPlaying = false;
-  }
-  let filePath = `./audio/${language}/${fileName}.wav`;
-  let response = fetch(filePath);
-  if (response.status === 404) {
-    filePath = `./audio/dutch/${fileName}.wav`; // switch to Dutch version
-    response = fetch(filePath);
-  }
-  if (response.status === 404 && "dutch" in filePath) {
-    console.error("Audio file not found:", fileName);
-    errorAudio.play();
-    return;
-  }
-  audio = new Audio(filePath);
-  audio.play();
-  audioPlaying = true;
-}
-// Download the audio file
-function downloadAudio(fileName) {
-  console.log("Downloading audio file:", fileName);
-
-  let filePath = `./audio/${language}/${fileName}.wav`;
-  let response = fetch(filePath);
-  if (response.status !== 200) {
-    filePath = `./audio/dutch/${fileName}.wav`; // switch to Dutch version
-  }
-  const tempAudio = new Audio(filePath);
-  successAudio.play();
-}

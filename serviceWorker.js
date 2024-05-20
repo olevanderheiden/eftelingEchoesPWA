@@ -1,7 +1,9 @@
 const urlsToCache = [
   "./",
-  "/styles/main.css",
+  "./styles/main.css",
   "./scripts/main.js",
+  "./scripts/audioManagement.js",
+  "./scripts/locationManagement.js",
   "./images/logos/logo.png",
   "./images/logos/bigLogo.png",
   "./images/logos/smallLogo.png",
@@ -76,30 +78,32 @@ self.addEventListener("fetch", (event) => {
         })
     );
   } else if (request.url.endsWith(".wav")) {
-    fetch(request)
-      .then((response) => {
-        const clone = response.clone();
-        clone.arrayBuffer().then((buffer) => {
+    event.respondWith(
+      (async function () {
+        const db = await new Promise((resolve, reject) => {
           const dbRequest = indexedDB.open("eftelingEchoesAudio", 1);
           dbRequest.onupgradeneeded = () =>
-            dbRequest.result.createObjectStore("audioFiles");
-          dbRequest.onsuccess = () => {
-            const tx = dbRequest.result.transaction("audioFiles", "readwrite");
-            tx.objectStore("audioFiles").put(buffer, request.url);
-          };
+            dbRequest.result.createObjectStore("audioFiles", {
+              keyPath: "url",
+            });
+          dbRequest.onsuccess = () => resolve(dbRequest.result);
+          dbRequest.onerror = () => reject(dbRequest.error);
         });
-        return response;
-      })
-      .catch(() => {
-        const dbRequest = indexedDB.open("eftelingEchoesAudio", 1);
-        dbRequest.onsuccess = () => {
-          const tx = dbRequest.result.transaction("audioFiles");
-          const request = tx.objectStore("audioFiles").get(request.url);
-          request.onsuccess = () => {
-            if (request.result) return new Response(request.result);
-            else return fetch(event.request);
-          };
-        };
-      });
+
+        const tx = db.transaction("audioFiles", "readwrite");
+        const store = tx.objectStore("audioFiles");
+        let audioBuffer = await store.get(request.url);
+
+        if (!audioBuffer) {
+          const response = await fetch(request);
+          audioBuffer = await response.arrayBuffer();
+          await store.put({ url: request.url, data: audioBuffer });
+        }
+
+        return new Response(audioBuffer, {
+          headers: { "Content-Type": "audio/wav" },
+        });
+      })()
+    );
   }
 });

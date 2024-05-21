@@ -22,7 +22,7 @@ export function calculateDistance(userCoords, rideCoords) {
 }
 
 // Function to check if user is within 10 meters of any ride
-export function isNearAnyRide(userCoords) {
+export function isNearAnyRide(userCoords, rides) {
   for (let ride of rides) {
     for (let coordinate of ride.coordinates) {
       let rideCoords = coordinate.coordinates.split(", ").map(Number);

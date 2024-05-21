@@ -1,4 +1,9 @@
-import { downloadAudio, playAudio, errorAudio } from "./audioManagement.js";
+import {
+  downloadAllAudio,
+  deleteAllAudio,
+  playAudio,
+  errorAudio,
+} from "./audioManagement.js";
 import {
   calculateDistance,
   isNearAnyRide,
@@ -17,8 +22,8 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     try {
       const registration = await navigator.serviceWorker.register(
-        "/serviceWorker.js",
-        { scope: "/" }
+        "./serviceWorker.js",
+        { scope: "./" }
       );
       // Call the function to display projects after service worker installation
       fetchRideList();
@@ -73,14 +78,7 @@ async function fetchRideList() {
           <div>Dub Type: ${
             ride.dubType === 0 ? "preshow only" : "Complete experience"
           }</div>`;
-      if (navigator.onLine) {
-        const downloadButton = document.createElement("button");
-        downloadButton.innerHTML = "Download";
-        downloadButton.onclick = () => {
-          downloadAudio(ride);
-        };
-        div.appendChild(downloadButton);
-      }
+
       for (let coordinate of ride.coordinates) {
         const playButton = document.createElement("button");
         playButton.innerHTML = `Play ${coordinate.name}`;
@@ -91,6 +89,46 @@ async function fetchRideList() {
       }
       container.appendChild(div);
     });
+
+    if (navigator.onLine) {
+      const downloadButton = document.createElement("button");
+      const cache = await caches.open("eftelingEchoesAudio");
+      let allCached = true;
+
+      for (let ride of rides) {
+        for (let coordinate of ride.coordinates) {
+          let filePath = `./audio/${language}/${ride.fileName}/${coordinate.name}.wav`;
+          let cacheResponse = await cache.match(filePath);
+          if (!cacheResponse) {
+            allCached = false;
+            break;
+          }
+        }
+        if (!allCached) {
+          break;
+        }
+      }
+
+      if (allCached) {
+        downloadButton.innerHTML = "Delete All";
+        downloadButton.onclick = async () => {
+          let allDeleted = await deleteAllAudio(rides);
+          if (allDeleted) {
+            downloadButton.innerHTML = "Download All";
+            downloadButton.onclick = () => {
+              downloadAllAudio(rides);
+            };
+          }
+        };
+      } else {
+        downloadButton.innerHTML = "Download All";
+        downloadButton.onclick = () => {
+          downloadAllAudio(rides);
+        };
+      }
+      container.appendChild(downloadButton);
+    }
+
     return container;
   } catch (error) {
     console.log("Error fetching ride data:", error);
@@ -106,7 +144,7 @@ navigator.geolocation.watchPosition(
       calculateDistance(lastKnownCoords, newCoords) >= 10
     ) {
       setLastKnownCoords(newCoords);
-      if (isNearAnyRide(newCoords)) {
+      if (isNearAnyRide(newCoords, rides)) {
         console.log("You are near a ride!");
       }
     }

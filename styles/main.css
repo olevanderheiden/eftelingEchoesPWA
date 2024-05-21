@@ -38,6 +38,15 @@ footer {
   text-align: center;
 }
 
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 40px; /* Adjust as needed */
+  background-color: #4caf50;
+}
+
 .card {
   position: fixed;
   top: 0;

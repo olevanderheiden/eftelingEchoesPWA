@@ -9,6 +9,7 @@ const urlsToCache = [
   "./images/logos/smallLogo.png",
   "./images/icons/undefined.png",
   "./manifest.json",
+  "./scripts/uiElements.js",
 ];
 
 self.addEventListener("install", (event) => {
@@ -80,29 +81,41 @@ self.addEventListener("fetch", (event) => {
   } else if (request.url.endsWith(".wav")) {
     event.respondWith(
       (async function () {
-        const db = await new Promise((resolve, reject) => {
-          const dbRequest = indexedDB.open("eftelingEchoesAudio", 1);
-          dbRequest.onupgradeneeded = () =>
-            dbRequest.result.createObjectStore("audioFiles", {
-              keyPath: "url",
-            });
-          dbRequest.onsuccess = () => resolve(dbRequest.result);
-          dbRequest.onerror = () => reject(dbRequest.error);
-        });
+        const cache = await caches.open("eftelingEchoesAudio");
+        let response = await cache.match(request);
 
-        const tx = db.transaction("audioFiles", "readwrite");
-        const store = tx.objectStore("audioFiles");
-        let audioBuffer = await store.get(request.url);
-
-        if (!audioBuffer) {
-          const response = await fetch(request);
-          audioBuffer = await response.arrayBuffer();
-          await store.put({ url: request.url, data: audioBuffer });
+        if (!response) {
+          response = await fetch(request);
+          cache.put(request, response.clone());
         }
 
-        return new Response(audioBuffer, {
-          headers: { "Content-Type": "audio/wav" },
-        });
+        if (request.headers.has("range")) {
+          const range = request.headers
+            .get("range")
+            .replace(/bytes=/, "")
+            .split("-");
+          const start = range[0] ? parseInt(range[0], 10) : 0;
+          const end = range[1] ? parseInt(range[1], 10) : response.size - 1;
+
+          if (start >= response.size) {
+            return new Response("", {
+              status: 416,
+              headers: { "Content-Range": `bytes */${response.size}` },
+            });
+          }
+
+          const contentLength = end - start + 1;
+          return new Response(response.slice(start, end + 1), {
+            status: 206,
+            headers: {
+              "Content-Range": `bytes ${start}-${end}/${response.size}`,
+              "Content-Length": contentLength,
+              "Content-Type": "audio/wav",
+            },
+          });
+        }
+
+        return response;
       })()
     );
   }

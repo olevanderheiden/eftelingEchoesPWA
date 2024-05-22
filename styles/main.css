@@ -24,18 +24,45 @@
   margin-top: 20px;
 }
 
+/* empty space for the title card */
+body {
+  margin-top: 25vh;
+}
+
 /* Styling for the header ID "titleCard" */
 #titleCard {
-  background-color: #f5f5f5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 20vh; /* 20% of the viewport's height */
+  background-color: #307748;
   padding: 20px;
   text-align: center;
+  display: flex;
+}
+
+#titleCard .image {
+  align-self: self-start;
 }
 
 /* Styling for the footer */
 footer {
-  background-color: #f5f5f5;
+  background-color: #307748;
   padding: 20px;
   text-align: center;
+}
+
+#downloadAllButton {
+  background: none; /* remove the background */
+  border: none; /* remove the border */
+  padding: 0; /* remove the padding */
+}
+
+.downloadButtonImage {
+  width: 25%; /* set the width to 25% of the parent element */
+  height: auto; /* set the height to auto to maintain aspect ratio */
+  display: block; /* display the image as a block element */
+  margin: auto; /* center the image */
 }
 
 .progress-bar {
@@ -48,18 +75,17 @@ footer {
 }
 
 .card {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  position: absolute;
+  top: 2%;
+  left: 80%;
+  width: 20%;
+  height: 96%;
   background: rgba(0, 0, 0, 0.5);
   color: #ac1f2d;
-  padding: 20px;
-  border-radius: 10px;
+  border-radius: 1%;
   z-index: 1000;
-  height: 184px; /* Half of the original image height */
-  background-size: cover; /* Make the background image cover the entire card */
-  background-position: center; /* Center the background image */
+  background-size: cover;
+  background-position: center;
   display: flex;
   flex-direction: column;
   align-items: center;

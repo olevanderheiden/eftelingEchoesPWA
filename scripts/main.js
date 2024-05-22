@@ -1,9 +1,4 @@
-import {
-  downloadAllAudio,
-  deleteAllAudio,
-  playAudio,
-  errorAudio,
-} from "./audioManagement.js";
+import { downloadAllAudio, playAudio, errorAudio } from "./audioManagement.js";
 import {
   calculateDistance,
   isNearAnyRide,
@@ -92,6 +87,7 @@ async function fetchRideList() {
 
     if (navigator.onLine) {
       const downloadButton = document.createElement("button");
+      downloadButton.id = "downloadAllButton";
       const cache = await caches.open("eftelingEchoesAudio");
       let allCached = true;
 
@@ -109,24 +105,21 @@ async function fetchRideList() {
         }
       }
 
-      if (allCached) {
-        downloadButton.innerHTML = "Delete All";
+      if (!allCached) {
+        const img = document.createElement("img");
+        img.src = "./images/uiElements/download.png";
+        img.alt = "Download";
+        img.className = "downloadButtonImage"; // add a class to the image
+
+        downloadButton.innerHTML = "Download to use offline"; // append the text first
+        downloadButton.appendChild(img); // append the image after the text
         downloadButton.onclick = async () => {
-          let allDeleted = await deleteAllAudio(rides);
-          if (allDeleted) {
-            downloadButton.innerHTML = "Download All";
-            downloadButton.onclick = () => {
-              downloadAllAudio(rides);
-            };
-          }
+          await downloadAllAudio(rides);
+          downloadButton.style.display = "none"; // hide the button after all files are downloaded
         };
-      } else {
-        downloadButton.innerHTML = "Download All";
-        downloadButton.onclick = () => {
-          downloadAllAudio(rides);
-        };
+        const titleCard = document.getElementById("titleCard");
+        titleCard.appendChild(downloadButton);
       }
-      container.appendChild(downloadButton);
     }
 
     return container;

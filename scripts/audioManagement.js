@@ -25,7 +25,13 @@ function createCard(folderName, fileName) {
     <h2>${rideName}</h2>
     <p>${fileName}</p>
   `;
-  document.body.appendChild(card);
+
+  let titleCard = document.getElementById("titleCard");
+  if (titleCard) {
+    titleCard.appendChild(card);
+  } else {
+    console.error("titleCard not found");
+  }
 }
 
 //play audio file defined in the ride object

@@ -8,6 +8,7 @@ const urlsToCache = [
   "./images/logos/bigLogo.png",
   "./images/logos/smallLogo.png",
   "./images/icons/undefined.png",
+  "./images/uiElements/download.png",
   "./manifest.json",
 ];
 

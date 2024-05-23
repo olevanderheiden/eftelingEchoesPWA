@@ -79,37 +79,43 @@ footer {
 }
 
 #downloadAllButton {
-  background: none; /* remove the background */
+  position: absolute;
+  bottom: 0;
+  left: 12%;
+  background: none;
+  width: 10%;
+  height: auto;
   border: none;
-  padding: 0;
+  color: #ac1f2d;
+  width: 100px;
+  height: 50px;
 }
 
 .downloadButtonImage {
-  width: 25%; /* set the width to 25% of the parent element */
+  width: 60%; /* set the width to 25% of the parent element */
   height: auto; /* set the height to auto to maintain aspect ratio */
   display: block; /* display the image as a block element */
   margin: auto; /* center the image */
 }
 
-.progress-bar {
+#progressBar {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 0%;
   height: 40px; /* Adjust as needed */
-  background-color: #4caf50;
+  color: red;
+  background-color: black;
 }
 
 .card {
-  position: absolute;
+  position: relative;
   top: 2%;
-  left: 80%;
-  width: 20%;
-  height: 96%;
+  width: 146px;
+  height: 92px;
   background: rgba(0, 0, 0, 0.5);
   color: #ac1f2d;
   border-radius: 1%;
-  z-index: 1000;
   background-size: cover;
   background-position: center;
   display: flex;
@@ -153,7 +159,6 @@ footer {
     ); /* Adjust the column width */
     grid-auto-rows: 60vw; /* Adjust the row height */
     height: auto; /* Let the grid height adjust automatically */
-    overflow-y: visible; /* Allow the grid to extend beyond the viewport height */
   }
 
   .ride .text,
@@ -168,8 +173,8 @@ footer {
 }
 @media screen and (max-width: 700px) {
   #titleCard #logo {
-    width: 223px;
-    height: 67px;
+    width: 200px;
+    height: auto;
   }
   #titleCard {
     align-items: center;
@@ -177,5 +182,8 @@ footer {
   div.button {
     display: flex;
     flex-direction: column;
+  }
+  #downloadAllButton {
+    bottom: 12%;
   }
 }

@@ -5,6 +5,8 @@ export let audioPlaying = false;
 export let errorAudio = new Audio("./audio/sounds/error.wav");
 export let successAudio = new Audio("./audio/sounds/succes.wav");
 
+let titleCard = document.getElementById("titleCard");
+
 // Format the ride name for display
 function formatRideName(folderName) {
   let words = folderName.split(/(?=[A-Z])/);
@@ -26,7 +28,6 @@ function createCard(folderName, fileName) {
     <p>${fileName}</p>
   `;
 
-  let titleCard = document.getElementById("titleCard");
   if (titleCard) {
     titleCard.appendChild(card);
   } else {
@@ -72,54 +73,29 @@ export async function playAudio(folderName, fileName) {
 
     // Create a new card and add it to the DOM
     createCard(folderName, fileName);
+
+    // Listen for the 'ended' event on the audio object
+    audio.addEventListener("ended", function () {
+      // When the audio is done playing, remove the card
+      let existingCard = document.querySelector(".card");
+      if (existingCard) {
+        existingCard.remove();
+      }
+      audioPlaying = false;
+    });
   } catch (error) {
     console.log("There has been a problem with your fetch operation: ", error);
     errorAudio.play();
   }
 }
 
-// Delete all audio files
-export async function deleteAllAudio(rides) {
-  console.log("Deleting all audio files");
-
-  const cache = await caches.open("eftelingEchoesAudio");
-
-  // Calculate total number of files
-  let totalFiles = 0;
-  for (let ride of rides) {
-    totalFiles += ride.coordinates.length;
-  }
-
-  // Create and display progress bar
-  let progressBar = createProgressBar(totalFiles);
-
-  let deletedFiles = 0;
-
-  for (let ride of rides) {
-    console.log("Deleting audio files for ride:", ride.name);
-    for (let coordinate of ride.coordinates) {
-      let filePath = `./audio/${language}/${ride.fileName}/${coordinate.name}.wav`;
-      if (await cache.match(filePath)) {
-        await cache.delete(filePath);
-        deletedFiles++;
-        updateProgressBar(progressBar, deletedFiles);
-      }
-    }
-  }
-
-  // Remove progress bar
-  removeProgressBar(progressBar);
-
-  console.log("All audio files deleted");
-}
-
 // Create and manage progress bar
 function createProgressBar(totalFiles) {
   let progressBar = document.createElement("progress");
-  progressBar.className;
+  progressBar.id = "progressBar";
   progressBar.max = totalFiles;
   progressBar.value = 0;
-  document.body.appendChild(progressBar);
+  titleCard.appendChild(progressBar);
   return progressBar;
 }
 

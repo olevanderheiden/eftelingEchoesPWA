@@ -5,23 +5,49 @@
   justify-content: center;
 }
 
+.rides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30vw, 1fr));
+  grid-auto-rows: 30vw; /* Set a specific row height */
+  gap: 10px;
+  justify-content: center;
+
+  height: calc(100vh - 20vh); /* Subtract the footer height and grid gap */
+  margin-bottom: 2vw; /* Add a margin to the bottom of the grid */
+  overflow-y: hidden;
+  width: 100vw; /* Set the width to 100% of the viewport width */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+}
+
 .ride {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px;
-  padding: 20px;
   border: 1px solid #000;
-  box-sizing: border-box;
+  justify-content: space-between;
+  height: 100%; /* Make the ride items take up the full height of the grid cell */
+  width: 100%; /* Make the ride items take up the full width of the grid cell */
 }
 
 .ride img {
-  width: 100%;
-  height: auto;
+  width: 20vw;
+  height: 20vw;
+  object-fit: contain;
 }
 
 .ride .text {
   margin-top: 20px;
+  order: 2;
+}
+
+.ride .buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  order: 3;
+  flex: 2;
+  gap: 15px;
+  justify-content: center;
 }
 
 /* empty space for the title card */
@@ -54,8 +80,8 @@ footer {
 
 #downloadAllButton {
   background: none; /* remove the background */
-  border: none; /* remove the border */
-  padding: 0; /* remove the padding */
+  border: none;
+  padding: 0;
 }
 
 .downloadButtonImage {
@@ -116,4 +142,40 @@ body {
 
 footer {
   margin-top: auto;
+}
+
+/* Styles for portrait mode */
+@media screen and (orientation: portrait) {
+  .rides-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(50vw, 1fr)
+    ); /* Adjust the column width */
+    grid-auto-rows: 60vw; /* Adjust the row height */
+    height: auto; /* Let the grid height adjust automatically */
+    overflow-y: visible; /* Allow the grid to extend beyond the viewport height */
+  }
+
+  .ride .text,
+  .ride button {
+    font-size: 3vw; /* Adjust the font size for smaller screens */
+  }
+
+  .ride img {
+    width: 40vw; /* Adjust the image width */
+    height: 40vw; /* Adjust the image height */
+  }
+}
+@media screen and (max-width: 700px) {
+  #titleCard #logo {
+    width: 223px;
+    height: 67px;
+  }
+  #titleCard {
+    align-items: center;
+  }
+  div.button {
+    display: flex;
+    flex-direction: column;
+  }
 }

@@ -33,18 +33,28 @@ if ("serviceWorker" in navigator) {
 async function fetchRideList() {
   try {
     const response = await fetch("rideslist.json");
-    rides = await response.json();
+    const rides = await response.json();
 
     const container = document.getElementById("rides-container");
+    container.className = "rides-grid";
 
     rides.forEach((ride) => {
-      console.log("Ride data:", ride);
       const div = document.createElement("div");
+      div.className = "ride";
+
+      const img = new Image();
+      img.src = `./images/icons/${ride.fileName}.png`;
+      img.alt = `${ride.name} Image`;
+      img.onload = () => {
+        div.appendChild(img);
+      };
+      img.onerror = () => {
+        img.src = "./images/icons/undefined.png";
+      };
 
       let rideName =
         ride[`name${language.charAt(0).toUpperCase() + language.slice(1)}`] ||
         ride.name;
-
       let rideDescription =
         ride[
           `description${language.charAt(0).toUpperCase() + language.slice(1)}`
@@ -54,25 +64,19 @@ async function fetchRideList() {
           `rideType${language.charAt(0).toUpperCase() + language.slice(1)}`
         ] || ride.rideType;
 
-      const img = new Image();
-      img.src = `./images/icons/${ride.fileName}.png`;
-      img.alt = `${ride.name} Image`;
-
-      img.onload = () => {
-        div.appendChild(img);
-      };
-      img.onerror = () => {
-        img.src = "./images/icons/undefined.png";
-      };
-      div.appendChild(img);
-
-      div.innerHTML = `
+      const infoDiv = document.createElement("div");
+      infoDiv.className = "text"; // add a class to the info div
+      infoDiv.innerHTML = `
           <div>Name: ${rideName}</div>
           <div>Ride Type: ${rideType}</div>
           <div>Description: ${rideDescription}</div>
           <div>Dub Type: ${
             ride.dubType === 0 ? "preshow only" : "Complete experience"
           }</div>`;
+      div.appendChild(infoDiv);
+
+      const buttonsDiv = document.createElement("div");
+      buttonsDiv.className = "buttons"; // add a class to the buttons div
 
       for (let coordinate of ride.coordinates) {
         const playButton = document.createElement("button");
@@ -80,8 +84,10 @@ async function fetchRideList() {
         playButton.onclick = () => {
           playAudio(ride.fileName, coordinate.name);
         };
-        div.appendChild(playButton);
+        buttonsDiv.appendChild(playButton); // append the button to the buttons div
       }
+
+      div.appendChild(buttonsDiv); // append the buttons div to the ride div
       container.appendChild(div);
     });
 

@@ -6,7 +6,7 @@ import {
   setLastKnownCoords,
 } from "./locationManagement.js";
 
-let rides = [];
+let rides;
 let deviceLanguage = navigator.language.split("-")[0].toLowerCase();
 export let language = ["english", "french", "german"].includes(deviceLanguage)
   ? deviceLanguage
@@ -33,7 +33,36 @@ if ("serviceWorker" in navigator) {
 async function fetchRideList() {
   try {
     const response = await fetch("rideslist.json");
-    const rides = await response.json();
+    rides = await response.json();
+
+    // Watcher for user's geolocation
+    navigator.geolocation.watchPosition(
+      (position) => {
+        let newCoords = [position.coords.latitude, position.coords.longitude];
+        console.log("New coordinates:", newCoords);
+        if (
+          lastKnownCoords === null ||
+          calculateDistance(lastKnownCoords, newCoords) >= 10
+        ) {
+          console.log("User moved more than 10 meters! Checking for rides...");
+          setLastKnownCoords(newCoords);
+          if (rides !== undefined && rides.length > 0) {
+            console.log("trigger isNearAnyRide... ");
+            isNearAnyRide(newCoords, rides);
+          }
+        }
+      },
+      (error) => {
+        console.error(error);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        distanceFilter: 10,
+      }
+    );
+
+    // Display the rides
 
     const container = document.getElementById("rides-container");
     container.className = "rides-grid";
@@ -65,7 +94,7 @@ async function fetchRideList() {
         ] || ride.rideType;
 
       const infoDiv = document.createElement("div");
-      infoDiv.className = "text"; // add a class to the info div
+      infoDiv.className = "text";
       infoDiv.innerHTML = `
           <div>Name: ${rideName}</div>
           <div>Ride Type: ${rideType}</div>
@@ -76,18 +105,18 @@ async function fetchRideList() {
       div.appendChild(infoDiv);
 
       const buttonsDiv = document.createElement("div");
-      buttonsDiv.className = "buttons"; // add a class to the buttons div
+      buttonsDiv.className = "buttons";
 
       for (let coordinate of ride.coordinates) {
         const playButton = document.createElement("button");
         playButton.innerHTML = `Play ${coordinate.name}`;
         playButton.onclick = () => {
-          playAudio(ride.fileName, coordinate.name);
+          playAudio(ride.fileName, coordinate.name, false);
         };
-        buttonsDiv.appendChild(playButton); // append the button to the buttons div
+        buttonsDiv.appendChild(playButton);
       }
 
-      div.appendChild(buttonsDiv); // append the buttons div to the ride div
+      div.appendChild(buttonsDiv);
       container.appendChild(div);
     });
 
@@ -96,7 +125,6 @@ async function fetchRideList() {
       downloadButton.id = "downloadAllButton";
       const cache = await caches.open("eftelingEchoesAudio");
       let allCached = true;
-
       for (let ride of rides) {
         for (let coordinate of ride.coordinates) {
           let filePath = `./audio/${language}/${ride.fileName}/${coordinate.name}.wav`;
@@ -115,13 +143,13 @@ async function fetchRideList() {
         const img = document.createElement("img");
         img.src = "./images/uiElements/download.png";
         img.alt = "Download";
-        img.className = "downloadButtonImage"; // add a class to the image
+        img.className = "downloadButtonImage";
 
-        downloadButton.innerHTML = "Download to use offline"; // append the text first
-        downloadButton.appendChild(img); // append the image after the text
+        downloadButton.innerHTML = "Download to use offline";
+        downloadButton.appendChild(img);
         downloadButton.onclick = async () => {
           await downloadAllAudio(rides);
-          downloadButton.style.display = "none"; // hide the button after all files are downloaded
+          downloadButton.style.display = "none";
         };
         const titleCard = document.getElementById("titleCard");
         titleCard.appendChild(downloadButton);
@@ -133,27 +161,3 @@ async function fetchRideList() {
     console.log("Error fetching ride data:", error);
   }
 }
-
-// Watcher for user's geolocation
-navigator.geolocation.watchPosition(
-  (position) => {
-    let newCoords = [position.coords.latitude, position.coords.longitude];
-    if (
-      lastKnownCoords === null ||
-      calculateDistance(lastKnownCoords, newCoords) >= 10
-    ) {
-      setLastKnownCoords(newCoords);
-      if (isNearAnyRide(newCoords, rides)) {
-        console.log("You are near a ride!");
-      }
-    }
-  },
-  (error) => {
-    console.error(error);
-  },
-  {
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    distanceFilter: 10,
-  }
-);

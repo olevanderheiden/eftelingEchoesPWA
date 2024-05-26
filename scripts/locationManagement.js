@@ -1,3 +1,4 @@
+import { playAudio } from "./audioManagement.js";
 // Function to calculate distance between two coordinates
 export function calculateDistance(userCoords, rideCoords) {
   const R = 6371e3; // metres
@@ -18,22 +19,22 @@ export function calculateDistance(userCoords, rideCoords) {
 
   const distance = R * c; // in metres
   return distance;
-  console.log("Distance in meters:", distance);
 }
 
-// Function to check if user is within 10 meters of any ride
+// Function to check if user is within 20 meters of any ride
 export function isNearAnyRide(userCoords, rides) {
   for (let ride of rides) {
     for (let coordinate of ride.coordinates) {
       let rideCoords = coordinate.coordinates.split(", ").map(Number);
       if (calculateDistance(userCoords, rideCoords) <= 20) {
-        playAudio(ride.fileName, coordinate.name);
+        playAudio(ride.fileName, coordinate.name, true);
         console.log(`You are near ${ride.name}!`);
         return true;
       }
     }
-    return false;
   }
+  console.log("You are not near any rides.");
+  return false;
 }
 
 // Placeholder for user's last known coordinates

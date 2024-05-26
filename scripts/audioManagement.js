@@ -1,9 +1,13 @@
 import { language } from "./main.js";
 export let audio = new Audio();
-
 export let audioPlaying = false;
 export let errorAudio = new Audio("./audio/sounds/error.wav");
 export let successAudio = new Audio("./audio/sounds/succes.wav");
+
+let previousShow = null;
+
+audio.muted = true;
+errorAudio.muted = true;
 
 let titleCard = document.getElementById("titleCard");
 
@@ -36,56 +40,64 @@ function createCard(folderName, fileName) {
 }
 
 //play audio file defined in the ride object
-export async function playAudio(folderName, fileName) {
-  console.log("Playing audio file:", folderName, fileName);
-  if (audioPlaying) {
-    audio.pause();
-    // Remove existing card
-    let existingCard = document.querySelector(".card");
-    if (existingCard) {
-      existingCard.remove();
-    }
-    audioPlaying = false;
-  }
-
-  let filePath = `./audio/${language}/${folderName}/${fileName}.wav`;
-  try {
-    const response = await fetch(filePath);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    console.log("Audio file found:", response);
-
-    // Create a stream from the response body
-    const stream = response.body;
-
-    // Create a new response from the stream
-    const newResponse = new Response(stream);
-
-    // Get a blob from the new response
-    const blob = await newResponse.blob();
-
-    // Create a blob URL and use it as the source for the Audio object
-    let blobURL = URL.createObjectURL(blob);
-    audio = new Audio(blobURL);
-    audio.play();
-    audioPlaying = true;
-
-    // Create a new card and add it to the DOM
-    createCard(folderName, fileName);
-
-    // Listen for the 'ended' event on the audio object
-    audio.addEventListener("ended", function () {
-      // When the audio is done playing, remove the card
+export async function playAudio(folderName, fileName, isGeolocation) {
+  if (fileName === previousShow && isGeolocation === true) {
+    return;
+  } else {
+    console.log("Playing audio file:", folderName, fileName);
+    if (audioPlaying) {
+      audio.pause();
+      // Remove existing card
       let existingCard = document.querySelector(".card");
       if (existingCard) {
         existingCard.remove();
       }
       audioPlaying = false;
-    });
-  } catch (error) {
-    console.log("There has been a problem with your fetch operation: ", error);
-    errorAudio.play();
+    }
+
+    let filePath = `./audio/${language}/${folderName}/${fileName}.wav`;
+    try {
+      const response = await fetch(filePath);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      console.log("Audio file found:", response);
+
+      // Create a stream from the response body
+      const stream = response.body;
+
+      // Create a new response from the stream
+      const newResponse = new Response(stream);
+
+      // Get a blob from the new response
+      const blob = await newResponse.blob();
+
+      // Create a blob URL and use it as the source for the Audio object
+      let blobURL = URL.createObjectURL(blob);
+      audio = new Audio(blobURL);
+      audio.play();
+      previousShow = fileName;
+      audioPlaying = true;
+
+      // Create a new card and add it to the DOM
+      createCard(folderName, fileName);
+
+      // Listen for the 'ended' event on the audio object
+      audio.addEventListener("ended", function () {
+        // When the audio is done playing, remove the card
+        let existingCard = document.querySelector(".card");
+        if (existingCard) {
+          existingCard.remove();
+        }
+        audioPlaying = false;
+      });
+    } catch (error) {
+      console.log(
+        "There has been a problem with your fetch operation: ",
+        error
+      );
+      errorAudio.play();
+    }
   }
 }
 

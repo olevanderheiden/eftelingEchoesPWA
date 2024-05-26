@@ -40,7 +40,7 @@
     "coordinates": [
       {
         "name": "main",
-        "coordinates": "51.64769444444444, 5.052"
+        "coordinates": "51.647720, 5.052056"
       }
     ]
   },
@@ -60,7 +60,7 @@
     "coordinates": [
       {
         "name": "main",
-        "coordinates": "51.64997222222222, 5.04975"
+        "coordinates": "51.649965, 5.049762"
       }
     ]
   },
@@ -80,7 +80,7 @@
     "coordinates": [
       {
         "name": "main",
-        "coordinates": "51.646739417118376, 5.05174537705254"
+        "coordinates": "51.648319, 5.050583"
       }
     ]
   },
@@ -98,11 +98,11 @@
     "coordinates": [
       {
         "name": "preShow1",
-        "coordinates": "51.65327777777778, 5.047527777777778"
+        "coordinates": "51.653284, 5.047515"
       },
       {
         "name": "preShow2",
-        "coordinates": "51.65325, 5.047472222222222"
+        "coordinates": "51.653249, 5.047474"
       }
     ]
   },
@@ -121,6 +121,26 @@
       {
         "name": "main",
         "coordinates": "51.653195438025826, 5.045918769113386"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "test 1",
+    "fileName": "test1",
+    "descriptionDutch": "test 1",
+    "description": "test 1",
+    "descriptionGerman": "test 1",
+    "descriptionFrench": "test 1",
+    "rideType": "test 1",
+    "ridetypeDutch": "test 1",
+    "rideTypeGerman": "test 1",
+    "rideTypeFrench": "test 1",
+    "dubType": 0,
+    "coordinates": [
+      {
+        "name": "Test",
+        "coordinates": "51.896967, 4.171719"
       }
     ]
   }

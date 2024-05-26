@@ -1,27 +1,189 @@
-/* Styling for the class "ride" */
-.ride {
-  margin: 20px;
-  padding: 20px;
-  border: 1px solid #000;
+#rides {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-content: center;
 }
 
-/* Styling for the ID "rides" */
-#rides {
+.rides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30vw, 1fr));
+  grid-auto-rows: 30vw;
+  gap: 10px;
+  justify-content: center;
+
+  height: calc(100vh - 20vh);
+  margin-bottom: 2vw;
+  overflow-y: hidden;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.ride {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #000;
   justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+
+.ride img {
+  width: 20vw;
+  height: 20vw;
+  object-fit: contain;
+}
+
+.ride .text {
+  margin-top: 20px;
+  order: 2;
+}
+
+.ride .buttons {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  order: 3;
+  flex: 2;
+  gap: 15px;
+  justify-content: center;
+}
+
+/* empty space for the title card */
+body {
+  margin-top: 25vh;
 }
 
 /* Styling for the header ID "titleCard" */
 #titleCard {
-  background-color: #f5f5f5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 20vh;
+  background-color: #307748;
   padding: 20px;
   text-align: center;
+  display: flex;
+}
+
+#titleCard .image {
+  align-self: self-start;
 }
 
 /* Styling for the footer */
 footer {
-  background-color: #f5f5f5;
+  background-color: #307748;
   padding: 20px;
   text-align: center;
+}
+
+#downloadAllButton {
+  position: absolute;
+  bottom: 0;
+  left: 12%;
+  background: none;
+  width: 10%;
+  height: auto;
+  border: none;
+  color: #ac1f2d;
+  width: 100px;
+  height: 50px;
+}
+
+.downloadButtonImage {
+  width: 60%;
+  height: auto;
+  display: block;
+  margin: auto;
+}
+
+#progressBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 40px;
+  color: red;
+  background-color: black;
+}
+
+.card {
+  position: relative;
+  top: 2%;
+  width: 146px;
+  height: 92px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #ac1f2d;
+  border-radius: 1%;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card h2 {
+  align-self: flex-start;
+  background-color: black;
+}
+
+.card p {
+  align-self: center;
+  margin-top: auto;
+  background-color: black;
+}
+
+.ride-image {
+  float: left;
+  margin-right: 10px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+footer {
+  margin-top: auto;
+}
+
+/* Styles for portrait mode */
+@media screen and (orientation: portrait) {
+  .rides-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(50vw, 1fr)
+    ); /* Adjust the column width */
+    grid-auto-rows: 60vw;
+    height: auto;
+  }
+
+  .ride .text,
+  .ride button {
+    font-size: 3vw;
+  }
+
+  .ride img {
+    width: 40vw;
+    height: 40vw;
+  }
+}
+@media screen and (max-width: 700px) {
+  #titleCard #logo {
+    width: 200px;
+    height: auto;
+  }
+  #titleCard {
+    align-items: center;
+  }
+  div.button {
+    display: flex;
+    flex-direction: column;
+  }
+  #downloadAllButton {
+    bottom: 12%;
+  }
 }

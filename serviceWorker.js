@@ -1,11 +1,14 @@
 const urlsToCache = [
   "./",
-  "/styles/main.css",
+  "./styles/main.css",
   "./scripts/main.js",
+  "./scripts/audioManagement.js",
+  "./scripts/locationManagement.js",
   "./images/logos/logo.png",
   "./images/logos/bigLogo.png",
   "./images/logos/smallLogo.png",
   "./images/icons/undefined.png",
+  "./images/uiElements/download.png",
   "./manifest.json",
 ];
 
@@ -76,30 +79,44 @@ self.addEventListener("fetch", (event) => {
         })
     );
   } else if (request.url.endsWith(".wav")) {
-    fetch(request)
-      .then((response) => {
-        const clone = response.clone();
-        clone.arrayBuffer().then((buffer) => {
-          const dbRequest = indexedDB.open("eftelingEchoesAudio", 1);
-          dbRequest.onupgradeneeded = () =>
-            dbRequest.result.createObjectStore("audioFiles");
-          dbRequest.onsuccess = () => {
-            const tx = dbRequest.result.transaction("audioFiles", "readwrite");
-            tx.objectStore("audioFiles").put(buffer, request.url);
-          };
-        });
+    event.respondWith(
+      (async function () {
+        const cache = await caches.open("eftelingEchoesAudio");
+        let response = await cache.match(request);
+
+        if (!response) {
+          response = await fetch(request);
+          cache.put(request, response.clone());
+        }
+
+        if (request.headers.has("range")) {
+          const range = request.headers
+            .get("range")
+            .replace(/bytes=/, "")
+            .split("-");
+          const start = range[0] ? parseInt(range[0], 10) : 0;
+          const end = range[1] ? parseInt(range[1], 10) : response.size - 1;
+
+          if (start >= response.size) {
+            return new Response("", {
+              status: 416,
+              headers: { "Content-Range": `bytes */${response.size}` },
+            });
+          }
+
+          const contentLength = end - start + 1;
+          return new Response(response.slice(start, end + 1), {
+            status: 206,
+            headers: {
+              "Content-Range": `bytes ${start}-${end}/${response.size}`,
+              "Content-Length": contentLength,
+              "Content-Type": "audio/wav",
+            },
+          });
+        }
+
         return response;
-      })
-      .catch(() => {
-        const dbRequest = indexedDB.open("eftelingEchoesAudio", 1);
-        dbRequest.onsuccess = () => {
-          const tx = dbRequest.result.transaction("audioFiles");
-          const request = tx.objectStore("audioFiles").get(request.url);
-          request.onsuccess = () => {
-            if (request.result) return new Response(request.result);
-            else return fetch(event.request);
-          };
-        };
-      });
+      })()
+    );
   }
 });

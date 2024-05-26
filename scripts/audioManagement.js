@@ -4,6 +4,7 @@ export let audioPlaying = false;
 export let errorAudio = new Audio("./audio/sounds/error.wav");
 export let successAudio = new Audio("./audio/sounds/succes.wav");
 
+let previousRide = null;
 let previousShow = null;
 
 audio.muted = true;
@@ -41,7 +42,11 @@ function createCard(folderName, fileName) {
 
 //play audio file defined in the ride object
 export async function playAudio(folderName, fileName, isGeolocation) {
-  if (fileName === previousShow && isGeolocation === true) {
+  if (
+    fileName === previousShow &&
+    previousRide === folderName &&
+    isGeolocation === true
+  ) {
     return;
   } else {
     console.log("Playing audio file:", folderName, fileName);
@@ -77,6 +82,7 @@ export async function playAudio(folderName, fileName, isGeolocation) {
       audio = new Audio(blobURL);
       audio.play();
       previousShow = fileName;
+      previousRide = folderName;
       audioPlaying = true;
 
       // Create a new card and add it to the DOM
